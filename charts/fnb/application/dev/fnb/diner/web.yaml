@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: fnb-diner-web
+  namespace: argocd
+spec:
+  destination:
+    name: ''
+    namespace: fnb
+    server: 'https://kubernetes.default.svc'
+  source:
+    repoURL: 'https://git.sunshinetech.vn/research-team/unicron/fnb-chart.git'
+    targetRevision: main
+    path: chart
+    helm:
+      valueFiles:
+        - ../values/dev/fnb/diner/web.yaml
+  project: fnb
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        maxDuration: 3m0s
+        factor: 2
