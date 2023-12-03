@@ -1,0 +1,267 @@
+#########################################################
+
+replicaCount: 1
+image:
+  repository: registry.hub.docker.com/tiktzuki/diner
+  tag: "develop.6c444.560"
+
+imagePullSecrets: []
+nameOverride: "fnb-diner"
+fullnameOverride: "fnb-diner"
+namespaceOverride: ""
+
+
+service:
+  type: ClusterIP
+  ports:
+  - name: http
+    targetPort: 8080
+    protocol: TCP
+    port: 8080
+  - name: rpc
+    targetPort: 9090
+    protocol: TCP
+    port: 9090
+
+
+deployment:
+  command: ""
+  args: ""
+  annotations:
+    keel.sh/policy: force
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+envFrom: []
+  # - configMapRef:
+  #     name: config
+env:
+  key_value:
+    APPLICATION_DOMAIN_SERVER: 'https://api.tiktzuki.com/dev/fnb-diner'
+    APP_OTP_BACKOFF: '30s'
+    APP_OTP_MAXIMUM_ATTEMPTS: '5'
+    APP_OTP_SESSION_TTL: '5m'
+    APP_OTP_TTL: '120s'
+
+    DATABASE_PASSWORD: 'P@ssword789'
+    DATABASE_URL: 'jdbc:postgresql://postgres-postgresql-hl.database:5432/fnb-diner-dev'
+    DATABASE_USER: 'postgres'
+
+    GRPC_CMS_CHANNEL_ADDRESS: 'static://fnb-cms.fnb:9090'
+
+    JAEGER_ENABLED: 'true'
+    JAEGER_HTTP_SENDER_URL: 'http://jaeger-collector.devops-tools:14268/api/traces'
+
+    KEYCLOAK_ADMIN_PASSWORD: 'P@ssword789'
+    KEYCLOAK_ADMIN_USERNAME: 'admin'
+    KEYCLOAK_AUTHORIZATION_URI: '${KEYCLOAK_HOST}/realms/fnb-diner/protocol/openid-connect/auth'
+    KEYCLOAK_CLIENT_ID: 'fnb-diner'
+    KEYCLOAK_CLIENT_SECRET: '3BjSmoPxcRsz8KBiYNj3jvO3GeGFQW87'
+    KEYCLOAK_CREDENTIALS_SECRET: '${KEYCLOAK_CLIENT_SECRET}'
+    KEYCLOAK_HOST: 'http://keycloak-21.keycloak'
+    KEYCLOAK_ISSUER_URI: '${KEYCLOAK_HOST}/realms/fnb-diner'
+    KEYCLOAK_JWT_SET_URI: '${KEYCLOAK_HOST}/realms/fnb-diner/protocol/openid-connect/certs'
+    KEYCLOAK_REALM: 'fnb-diner'
+    KEYCLOAK_RESOURCE: '${KEYCLOAK_CLIENT_ID}'# Client id use for admin
+    KEYCLOAK_TOKEN_URI: '${KEYCLOAK_HOST}/realms/fnb-diner/protocol/openid-connect/token'
+    KEYCLOAK_USERINFO_URI: '${KEYCLOAK_HOST}/realms/fnb-diner/protocol/openid-connect/userinfo'
+
+    KLB_PAY_URL: 'https://api-staging.kienlongbank.co/pay'
+
+    LOGGING_LEVEL_ORG_AXONFRAMEWORK: 'info'
+
+    NOTIFO_API_KEY: 'ck12whzuo7vqi38zsmoa30fjqwdlv9fzlmg2saj7ax8x'
+    NOTIFO_APP_ID: 'b89f4dce-c1e7-4f65-a429-e64298f25c9d'
+    NOTIFO_URL: 'https://notify-dev.unicloud.com.vn'
+
+    RABBITMQ_HOST: 'rabbitmq.public-queue'
+    RABBITMQ_PASSWORD: 'guest'
+    RABBITMQ_PORT: '5672'
+    RABBITMQ_USERNAME: 'guest'
+    RABBITMQ_VHOST: 'fnb-dev'
+
+    REDIS_DATABASE: '1'
+    REDIS_HOST: 'redis-master.fnb.svc.cluster.local'
+    REDIS_PASSWORD: 'P@ssword789'
+    REDIS_PORT: '6379'
+
+    SERVER_PATH: /dev/fnb-diner
+
+    SMS_TOKEN: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6ImFkbWluIiwiaWF0IjoxNTE2MjM5MDIyfQ.wuHYbExf8mo06-RveSfS2GZt6MOR1_ahgU7T58HFdxQ'
+    SMS_URL: 'https://sms.sunshineapp.vn/api'
+
+    SPRING_JPA_HIBERNATE_DDL_AUTO: 'update'
+    SPRING_JPA_PROPERTIES_HIBERNATE_SHOW_SQL: 'false'
+    SPRING_JPA_PROPERTIES_JDBC_BATCH_SIZE: '100'
+    SPRING_PROFILES_ACTIVE: 'dev-group'
+
+    WEBSOCKET_HOST: 'rabbitmq.public-queue'
+    WEBSOCKET_PASSWORD: 'guest'
+    WEBSOCKET_PORT: '61613'
+    WEBSOCKET_USERNAME: 'guest'
+    WEBSOCKET_VHOST: 'fnb-dev'
+
+  name_value:
+
+persistence:
+  enabled: false
+
+  create:
+    enabled: false
+    mountPath: /root
+    accessMode: ReadWriteOnce
+    size: 50Mi
+    storageClass: local
+
+  existingClaim:
+    enabled: false
+    volumeMounts: 
+      - name: "rd"
+        mountPath: "/app"
+      - name: "rd-config"
+        mountPath: /scripts/setup.sh
+    volumes:
+      - name: "rd"
+        persistentVolumeClaim:
+          claimName: "rd"
+      - name: "rd-configmap"
+        configMap:
+          name: "config"
+          defaultMode: 0777
+
+
+#########################################################
+
+initContainers: []
+  # - name: init-test
+  #   image: ubuntu:20.04
+  #   command: ['echo', 'hello-world']
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+tolerations: []
+
+affinity: {}
+
+livenessProbe:
+  enabled: true
+
+  initialDelaySeconds: 25
+  periodSeconds: 20
+  timeoutSeconds: 120
+  successThreshold: 1
+  failureThreshold: 3
+
+  setting:
+    # exec:
+    #   command: 
+    #   - cat
+    #   - /tmp/health
+    httpGet:
+      path: /actuator/health
+      port: http
+    #   httpHeaders: []
+    # tcpSocket:
+    #   port: http
+
+    
+readinessProbe:
+  enabled: true
+
+  initialDelaySeconds: 25
+  periodSeconds: 10
+  timeoutSeconds: 150
+  successThreshold: 1
+  failureThreshold: 3
+
+  setting:
+    # exec:
+    #   command: 
+    #   - cat
+    #   - /tmp/health
+    httpGet:
+      path: /actuator/health
+      port: http
+    #   httpHeaders: []
+    # tcpSocket:
+    #   port: http
+
+
+startupProbe:
+  enabled: false
+
+  initialDelaySeconds: 
+  periodSeconds: 
+  timeoutSeconds: 
+  successThreshold: 
+  failureThreshold: 
+
+  setting:
+    #exec:
+      # command: 
+      # - cat
+      # - /tmp/health
+    # httpGet:
+    #   path: /health
+    #   port: http
+    #   httpHeaders: []
+    # tcpSocket:
+    #   port: http
+
