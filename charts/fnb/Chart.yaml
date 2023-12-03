@@ -1,6 +1,6 @@
-#annotations:
-#  category: Fnb
-#  licenses: Apache-2.0
+annotations:
+  category: Fnb
+  licenses: Apache-2.0
 #  images: |
 #    - name: fnb-cms
 #      image: docker.io/tiktuzki/fnb-cms:latest
@@ -14,12 +14,12 @@ description: Fnb application
 type: application
 version: 0.1.0
 appVersion: "2.48.0"
-#dependencies:
-#  - name: common
-#    repository: oci://registry-1.docker.io/bitnamicharts
-#    tags:
-#      - bitnami-common
-#    version: 2.x.x
+dependencies:
+  - name: common
+    repository: oci://registry-1.docker.io/bitnamicharts
+    tags:
+      - bitnami-common
+    version: 2.x.x
 #home: https://github.com/prometheus/prometheus
 #icon: https://bitnami.com/assets/stacks/prometheus/img/prometheus-stack-220x234.png
 #keywords:
