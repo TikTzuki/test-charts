@@ -26,8 +26,8 @@ appVersion: "2.48.0"
 #  - cms
 #  - diner
 #  - admin
-#maintainers:
-#  - name: TikTuzki
-#    url: https://github.com/tiktzuki/charts
+maintainers:
+  - name: TikTuzki
+    url: https://github.com/tiktzuki/charts
 #sources:
 #  - https://github.com/tiktzuki/fnb
