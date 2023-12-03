@@ -124,6 +124,21 @@ admin:
     extraTls: []
     secrets: []
     extraRules: []
+  service:
+    type: LoadBalancer
+    ports:
+      http: 80
+    nodePorts:
+      http: ""
+    clusterIP: ""
+    loadBalancerIP: ""
+    loadBalancerClass: ""
+    loadBalancerSourceRanges: []
+    externalTrafficPolicy: Cluster
+    annotations: {}
+    extraPorts: []
+    sessionAffinity: ClientIP
+    sessionAffinityConfig: {}
   persistence:
     enabled: false
     mountPath: /fnb/admin/data
