@@ -11,8 +11,9 @@
 apiVersion: v2
 name: fnb
 description: Fnb application
+type: application
 version: 0.1.0
-appVersion: 2.48.0
+appVersion: "2.48.0"
 #dependencies:
 #  - name: common
 #    repository: oci://registry-1.docker.io/bitnamicharts
