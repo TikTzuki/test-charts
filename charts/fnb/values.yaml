@@ -1,0 +1,166 @@
+global:
+  imageRegistry: ""
+  imagePullSecrets: []
+  storageClass: ""
+kubeVersion: ""
+nameOverride: ""
+fullnameOverride: ""
+namespaceOverride: ""
+commonLabels: {}
+commonAnnotations: {}
+clusterDomain: cluster.local
+ingress:
+  apiVersion: ""
+extraDeploy: []
+diagnosticMode:
+  enabled: false
+  command:
+    - sleep
+  args:
+    - infinity
+admin:
+  image:
+    registry: docker.io
+    repository: tiktuzki/fnb-admin
+    tag: latest
+    digest: ""
+    pullPolicy: Always
+    pullSecrets: []
+    debug: false
+  replicaCount: 1
+  containerPorts:
+    http: 80
+    https: 443
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 5
+    periodSeconds: 20
+    timeoutSeconds: 3
+    failureThreshold: 3
+    successThreshold: 1
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 2
+    failureThreshold: 5
+    successThreshold: 1
+  startupProbe:
+    enabled: false
+    initialDelaySeconds: 2
+    periodSeconds: 5
+    timeoutSeconds: 2
+    failureThreshold: 10
+    successThreshold: 1
+  customLivenessProbe: {}
+  customReadinessProbe: {}
+  customStartupProbe: {}
+  resources:
+    limits: {}
+    requests: {}
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1001
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 1001
+    runAsNonRoot: true
+    readOnlyRootFilesystem: false
+  existingConfigmap:
+  command: []
+  args: []
+  hostAliases: []
+  daemonsetAnnotations: {}
+  deploymentAnnotations: {}
+  statefulsetAnnotations: {}
+  podLabels: {}
+  podAnnotations: {}
+  podAffinityPreset: ""
+  podAntiAffinityPreset: soft
+  pdb:
+    create: false
+    minAvailable: 1
+    maxUnavailable: ""
+  autoscaling:
+    enabled: false
+    minReplicas: ""
+    maxReplicas: ""
+    targetCPU: ""
+    targetMemory: ""
+  nodeAffinityPreset:
+    type: ""
+    key: ""
+    values: []
+  affinity: {}
+  nodeSelector: {}
+  tolerations: []
+  updateStrategy:
+    type: RollingUpdate
+  podManagementPolicy: OrderedReady
+  priorityClassName: ""
+  topologySpreadConstraints: []
+  schedulerName: ""
+  terminationGracePeriodSeconds: ""
+  lifecycleHooks: {}
+  extraEnvVars: []
+  extraEnvVarsCM: ""
+  extraEnvVarsSecret: ""
+  extraVolumes: []
+  extraVolumeMounts: []
+  sidecars: []
+  initContainers: []
+  ingress:
+    enabled: false
+    pathType: ImplementationSpecific
+    apiVersion: ""
+    hostname: admin.fnb.local
+    ingressClassName: ""
+    path: /
+    annotations: {}
+    tls: false
+    selfSigned: false
+    extraHosts: []
+    extraPaths: []
+    extraTls: []
+    secrets: []
+    extraRules: []
+  persistence:
+    enabled: false
+    mountPath: /fnb/admin/data
+    subPath: ""
+    storageClass: ""
+    annotations: {}
+    accessModes:
+      - ReadWriteOnce
+    size: 8Gi
+    existingClaim: ""
+    selector: {}
+    dataSource: {}
+
+volumePermissions:
+  enabled: false
+  image:
+    registry: docker.io
+    repository: bitnami/os-shell
+    tag: 11-debian-11-r91
+    pullPolicy: IfNotPresent
+    pullSecrets: []
+  resources:
+    limits: {}
+    requests: {}
+  containerSecurityContext:
+    runAsUser: 0
+metrics:
+  enabled: false
+  serviceMonitor:
+    enabled: false
+    namespace: ""
+    annotations: {}
+    labels: {}
+    jobLabel: ""
+    honorLabels: false
+    interval: ""
+    scrapeTimeout: ""
+    metricRelabelings: []
+    relabelings: []
+    selector: {}

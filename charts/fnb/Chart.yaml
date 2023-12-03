@@ -1,0 +1,32 @@
+annotations:
+  category: Fnb
+  licenses: Apache-2.0
+  images: |
+    - name: fnb-cms
+      image: docker.io/tiktuzki/fnb-cms:latest
+    - name: fnb-diner
+      image: docker.io/tiktuzki/fnb-diner:latest
+    - name: fnb-admin
+      image: docker.io/tiktuzki/fnb-admin:latest
+apiVersion: v2
+appVersion: 2.48.0
+dependencies:
+  - name: common
+    repository: oci://registry-1.docker.io/bitnamicharts
+    tags:
+      - bitnami-common
+    version: 2.x.x
+description: Fnb application
+home: https://github.com/prometheus/prometheus
+icon: https://bitnami.com/assets/stacks/prometheus/img/prometheus-stack-220x234.png
+keywords:
+  - cms
+  - diner
+  - admin
+maintainers:
+  - name: TikTuzki
+    url: https://github.com/tiktzuki/charts
+name: %%CHART_NAME%%
+sources:
+  - https://github.com/tiktzuki/fnb
+version: 0.1.0
