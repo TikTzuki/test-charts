@@ -1,61 +1,62 @@
 {{/*
-Copyright VMware, Inc.
-SPDX-License-Identifier: APACHE-2.0
+Expand the name of the chart.
 */}}
+{{- define "app-demo.name" -}}
+{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
+{{- end }}
 
 {{/*
-Return the proper %%MAIN_OBJECT_BLOCK%% image name
+Create a default fully qualified app name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+If release name contains chart name it will be used as a full name.
 */}}
-{{- define "%%TEMPLATE_NAME%%.image" -}}
-{{ include "common.images.image" (dict "imageRoot" .Values.%%MAIN_OBJECT_BLOCK%%.image "global" .Values.global) }}
-{{- end -}}
+{{- define "app-demo.fullname" -}}
+{{- if .Values.fullnameOverride }}
+{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- $name := default .Chart.Name .Values.nameOverride }}
+{{- if contains $name .Release.Name }}
+{{- .Release.Name | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
+{{- end }}
+{{- end }}
+{{- end }}
 
 {{/*
-Return the proper image name (for the init container volume-permissions image)
+Create chart name and version as used by the chart label.
 */}}
-{{- define "%%TEMPLATE_NAME%%.volumePermissions.image" -}}
-{{- include "common.images.image" ( dict "imageRoot" .Values.volumePermissions.image "global" .Values.global ) -}}
-{{- end -}}
+{{- define "app-demo.chart" -}}
+{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
+{{- end }}
 
 {{/*
-Return the proper Docker Image Registry Secret Names
+Common labels
 */}}
-{{- define "%%TEMPLATE_NAME%%.imagePullSecrets" -}}
-{{- include "common.images.renderPullSecrets" (dict "images" (list .Values.%%MAIN_OBJECT_BLOCK%%.image .Values.%%SECONDARY_OBJECT_BLOCK%%.image .Values.volumePermissions.image) "context" $) -}}
-{{- end -}}
+{{- define "app-demo.labels" -}}
+helm.sh/chart: {{ include "app-demo.chart" . }}
+{{ include "app-demo.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{/*
+Selector labels
+*/}}
+{{- define "app-demo.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "app-demo.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "%%TEMPLATE_NAME%%.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create -}}
-    {{ default (include "common.names.fullname" .) .Values.serviceAccount.name }}
-{{- else -}}
-    {{ default "default" .Values.serviceAccount.name }}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Return true if cert-manager required annotations for TLS signed certificates are set in the Ingress annotations
-Ref: https://cert-manager.io/docs/usage/ingress/#supported-annotations
-*/}}
-{{- define "%%TEMPLATE_NAME%%.ingress.certManagerRequest" -}}
-{{ if or (hasKey . "cert-manager.io/cluster-issuer") (hasKey . "cert-manager.io/issuer") }}
-    {{- true -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Compile all warnings into a single message.
-*/}}
-{{- define "%%TEMPLATE_NAME%%.validateValues" -}}
-{{- $messages := list -}}
-{{- $messages := append $messages (include "%%TEMPLATE_NAME%%.validateValues.foo" .) -}}
-{{- $messages := append $messages (include "%%TEMPLATE_NAME%%.validateValues.bar" .) -}}
-{{- $messages := without $messages "" -}}
-{{- $message := join "\n" $messages -}}
-
-{{- if $message -}}
-{{-   printf "\nVALUES VALIDATION:\n%s" $message -}}
-{{- end -}}
-{{- end -}}
+{{- define "app-demo.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create }}
+{{- default (include "app-demo.fullname" .) .Values.serviceAccount.name }}
+{{- else }}
+{{- default "default" .Values.serviceAccount.name }}
+{{- end }}
+{{- end }}
