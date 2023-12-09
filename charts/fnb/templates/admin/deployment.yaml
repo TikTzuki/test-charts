@@ -85,8 +85,6 @@ spec:
           env:
             - name: BITNAMI_DEBUG
               value: {{ ternary "true" "false" (or .Values.admin.image.debug .Values.diagnosticMode.enabled) | quote }}
-            - name: foo
-              value: bar
             {{- if .Values.admin.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.admin.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
@@ -112,19 +110,24 @@ spec:
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.admin.customLivenessProbe "context" $) | nindent 12 }}
           {{- else if .Values.admin.livenessProbe.enabled }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.admin.livenessProbe "enabled") "context" $) | nindent 12 }}
-           %%httpGet || command || etc%%
+            httpGet:
+              path: /-/healthy
+              port: http
           {{- end }}
           {{- if .Values.admin.customReadinessProbe }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.admin.customReadinessProbe "context" $) | nindent 12 }}
           {{- else if .Values.admin.readinessProbe.enabled }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.admin.readinessProbe "enabled") "context" $) | nindent 12 }}
-            %%httpGet || command || etc%%
+            httpGet:
+              path: /-/ready
+              port: http
           {{- end }}
           {{- if .Values.admin.customStartupProbe }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.admin.customStartupProbe "context" $) | nindent 12 }}
           {{- else if .Values.admin.startupProbe.enabled }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.admin.startupProbe "enabled") "context" $) | nindent 12 }}
-            %%httpGet || command || etc%%
+            tcpSocket:
+              port: http
           {{- end }}
           {{- end }}
           {{- if .Values.admin.lifecycleHooks }}
