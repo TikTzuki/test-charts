@@ -157,7 +157,14 @@ admin:
     selector: {}
     dataSource: {}
 cms:
-  image: {}
+  image:
+    registry: docker.io
+    repository: tiktuzki/fnb-cms
+    tag: latest
+    digest: ""
+    pullPolicy: Always
+    pullSecrets: []
+    debug: false
 volumePermissions:
   enabled: false
   image:
