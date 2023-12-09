@@ -133,6 +133,12 @@ spec:
           {{- if .Values.admin.lifecycleHooks }}
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.admin.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
+          volumeMounts:
+            - name: data
+              mountPath: {{ .Values.admin.persistence.mountPath }}
+              {{- if .Values.admin.persistence.subPath }}
+              subPath: {{ .Values.admin.persistence.subPath }}
+              {{- end }}
           {{- if .Values.admin.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.admin.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
