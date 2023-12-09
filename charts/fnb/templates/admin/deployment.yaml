@@ -75,8 +75,6 @@ spec:
           securityContext: {{- omit .Values.admin.containerSecurityContext "enabled" | toYaml | nindent 12 }}
           {{- end }}
           {{- if .Values.diagnosticMode.enabled }}
-          command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
-          {{- else if .Values.admin.command }}
           command: {{- include "common.tplvalues.render" (dict "value" .Values.admin.command "context" $) | nindent 12 }}
           {{- end }}
           {{- if .Values.diagnosticMode.enabled }}
