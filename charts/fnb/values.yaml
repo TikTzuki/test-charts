@@ -156,7 +156,8 @@ admin:
     existingClaim: ""
     selector: {}
     dataSource: {}
-
+cms:
+  image: {}
 volumePermissions:
   enabled: false
   image:
