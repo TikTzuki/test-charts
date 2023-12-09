@@ -1,0 +1,33 @@
+{{- /*
+Copyright VMware, Inc.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- if and .Values.admin.persistence.enabled (not .Values.admin.persistence.existingClaim) -}}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ include "common.names.fullname" . }}
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+    app.kubernetes.io/component: admin
+  {{- if or .Values.admin.persistence.annotations .Values.commonAnnotations }}
+  {{- $annotations := include "common.tplvalues.merge" (dict "values" .Values.admin.persistence.annotations .Values.commonAnnotations "context" .) | fromYaml }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" $annotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  accessModes:
+  {{- range .Values.admin.persistence.accessModes }}
+    - {{ . | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.admin.persistence.size | quote }}
+  {{- if .Values.admin.persistence.selector }}
+  selector: {{- include "common.tplvalues.render" (dict "value" .Values.admin.persistence.selector "context" $) | nindent 4 }}
+  {{- end }}
+  {{- if .Values.admin.persistence.dataSource }}
+  dataSource: {{- include "common.tplvalues.render" (dict "value" .Values.admin.persistence.dataSource "context" $) | nindent 4 }}
+  {{- end }}
+  {{- include "common.storage.class" (dict "persistence" .Values.admin.persistence "global" .Values.global) | nindent 2 }}
+{{- end -}}
