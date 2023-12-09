@@ -15,7 +15,7 @@ extraDeploy: []
 diagnosticMode:
   enabled: false
   command:
-    - sleep
+    - ls
   args:
     - infinity
 admin:
@@ -29,8 +29,8 @@ admin:
     debug: false
   replicaCount: 1
   containerPorts:
-    http: 80
-    https: 443
+    http: 8080
+    https: 8443
   livenessProbe:
     enabled: true
     initialDelaySeconds: 5
@@ -103,14 +103,9 @@ admin:
   terminationGracePeriodSeconds: ""
   lifecycleHooks: {}
   extraEnvVars:
-    - name: BASE_HOST
-      value: "14.225.205.235"
-    - name: DATABASE_URL
-      value: "jdbc:postgresql://${BASE_HOST}:35432/fnb-cms-dev"
-    - name: DATABASE_USER
-      value: "postgres"
-    - name: DATABASE_PASSWORD
-      value: "P@ssword789"
+    DATABASE_URL: "jdbc:postgresql://postgres-postgresql.database.svc.cluster.local:5432/fnb-admin"
+    DATABASE_USER: "postgres"
+    DATABASE_PASSWORD: "P@ssword789"
   extraEnvVarsCM: ""
   extraEnvVarsSecret: ""
   extraVolumes: []
@@ -140,7 +135,7 @@ admin:
   service:
     type: LoadBalancer
     ports:
-      http: 80
+      http: 8080
     nodePorts:
       http: ""
     clusterIP: ""
@@ -160,7 +155,7 @@ admin:
     annotations: {}
     accessModes:
       - ReadWriteOnce
-    size: 8Gi
+    size: 1Gi
     existingClaim: ""
     selector: {}
     dataSource: {}
