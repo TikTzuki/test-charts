@@ -102,7 +102,15 @@ admin:
   schedulerName: ""
   terminationGracePeriodSeconds: ""
   lifecycleHooks: {}
-  extraEnvVars: []
+  extraEnvVars:
+    - name: BASE_HOST
+      value: "14.225.205.235"
+    - name: DATABASE_URL
+      value: "jdbc:postgresql://${BASE_HOST}:35432/fnb-cms-dev"
+    - name: DATABASE_USER
+      value: "postgres"
+    - name: DATABASE_PASSWORD
+      value: "P@ssword789"
   extraEnvVarsCM: ""
   extraEnvVarsSecret: ""
   extraVolumes: []
