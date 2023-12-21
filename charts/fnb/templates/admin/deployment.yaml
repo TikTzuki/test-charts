@@ -140,7 +140,7 @@ spec:
               subPath: {{ .Values.admin.persistence.subPath }}
               {{- end }}
             - name: config
-              mountPath: {{ default ("/config" .) .Values.admin.persistence.configMountPath }}
+              mountPath: {{ default "/config" .Values.admin.persistence.configMountPath }}
           {{- if .Values.admin.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.admin.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
