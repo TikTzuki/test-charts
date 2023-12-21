@@ -102,10 +102,7 @@ admin:
   schedulerName: ""
   terminationGracePeriodSeconds: ""
   lifecycleHooks: {}
-  extraEnvVars:
-    DATABASE_URL: "jdbc:postgresql://postgres-postgresql.database.svc.cluster.local:5432/fnb-admin"
-    DATABASE_USER: "postgres"
-    DATABASE_PASSWORD: "P@ssword789"
+  extraEnvVars: []
   extraEnvVarsCM: ""
   extraEnvVarsSecret: ""
   extraVolumes: []
@@ -157,6 +154,8 @@ admin:
       - ReadWriteOnce
     size: 1Gi
     existingClaim: ""
+    configMountPath: ""
+    configMapName: ""
     selector: {}
     dataSource: {}
 cms:
