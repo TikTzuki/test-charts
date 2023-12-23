@@ -33,7 +33,7 @@ spec:
       labels: {{- include "common.labels.standard" ( dict "customLabels" $podLabels "context" $ ) | nindent 8 }}
         app.kubernetes.io/component: admin
     spec:
-      serviceAccountName: {{ template "fnb.serviceAccountName" . }}
+      serviceAccountName: {{ template "fnb.admin.serviceAccountName" . }}
       {{- include "fnb.imagePullSecrets" . | nindent 6 }}
       {{- if .Values.hostAliases }}
       hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.hostAliases "context" $) | nindent 8 }}

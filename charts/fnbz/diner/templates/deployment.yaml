@@ -1,0 +1,184 @@
+{{- /*
+Copyright VMware, Inc.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ template "common.names.fullname" . }}
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+    app.kubernetes.io/component: diner
+  {{- if or .Values.diner.deploymentAnnotations .Values.commonAnnotations }}
+  {{- $annotations := include "common.tplvalues.merge" (dict "values" .Values.diner.deploymentAnnotations .Values.commonAnnotations "context" .) | fromYaml }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" $annotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if not .Values.diner.autoscaling.enabled }}
+  replicas: {{ .Values.diner.replicaCount }}
+  {{- end }}
+  {{- if .Values.diner.updateStrategy }}
+  strategy: {{- toYaml .Values.diner.updateStrategy | nindent 4 }}
+  {{- end }}
+  {{- $podLabels := include "common.tplvalues.merge" (dict "values" .Values.diner.podLabels .Values.commonLabels "context" .) | fromYaml }}
+  selector:
+    matchLabels: {{- include "common.labels.matchLabels" ( dict "customLabels" $podLabels "context" $ ) | nindent 6 }}
+      app.kubernetes.io/component: diner
+  template:
+    metadata:
+      {{- if .Values.diner.podAnnotations }}
+      annotations: {{- include "common.tplvalues.render" (dict "value" .Values.diner.podAnnotations "context" $) | nindent 8 }}
+      {{- end }}
+      labels: {{- include "common.labels.standard" ( dict "customLabels" $podLabels "context" $ ) | nindent 8 }}
+        app.kubernetes.io/component: diner
+    spec:
+      serviceAccountName: {{ template "fnb.serviceAccountName" . }}
+      {{- include "fnb.imagePullSecrets" . | nindent 6 }}
+      {{- if .Values.diner.hostAliases }}
+      hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.diner.hostAliases "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.diner.affinity }}
+      affinity: {{- include "common.tplvalues.render" ( dict "value" .Values.diner.affinity "context" $) | nindent 8 }}
+      {{- else }}
+      affinity:
+        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.diner.podAffinityPreset "component" "diner" "customLabels" $podLabels "context" $) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.diner.podAntiAffinityPreset "component" "diner" "customLabels" $podLabels "context" $) | nindent 10 }}
+        nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.diner.nodeAffinityPreset.type "key" .Values.diner.nodeAffinityPreset.key "values" .Values.diner.nodeAffinityPreset.values) | nindent 10 }}
+      {{- end }}
+      {{- if .Values.diner.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.diner.nodeSelector "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.diner.tolerations }}
+      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.diner.tolerations "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.diner.priorityClassName }}
+      priorityClassName: {{ .Values.diner.priorityClassName | quote }}
+      {{- end }}
+      {{- if .Values.diner.schedulerName }}
+      schedulerName: {{ .Values.diner.schedulerName | quote }}
+      {{- end }}
+      {{- if .Values.diner.topologySpreadConstraints }}
+      topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" .Values.diner.topologySpreadConstraints "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.diner.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.diner.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      {{- if .Values.diner.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: {{ .Values.diner.terminationGracePeriodSeconds }}
+      {{- end }}
+      initContainers:
+        {{- if and .Values.volumePermissions.enabled .Values.persistence.enabled }}
+        - name: volume-permissions
+          image: {{ include "fnb.volumePermissions.image" . }}
+          imagePullPolicy: {{ .Values.volumePermissions.image.pullPolicy | quote }}
+          command:
+            - ls
+          securityContext: {{- include "common.tplvalues.render" (dict "value" .Values.volumePermissions.containerSecurityContext "context" $) | nindent 12 }}
+          {{- if .Values.volumePermissions.resources }}
+          resources: {{- toYaml .Values.volumePermissions.resources | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: foo
+              mountPath: {{ .Values.persistence.mountPath }}
+              {{- if .Values.persistence.subPath }}
+              subPath: {{ .Values.persistence.subPath }}
+              {{- end }}
+        {{- end }}
+        {{- if .Values.diner.initContainers }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.diner.initContainers "context" $) | nindent 8 }}
+        {{- end }}
+      containers:
+        - name: fnb-diner-backend
+          image: {{ template "fnb.image" . }}
+          imagePullPolicy: {{ .Values.diner.image.pullPolicy }}
+          {{- if .Values.diner.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.diner.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
+          {{- else if .Values.diner.command }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.diner.command "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
+          {{- else if .Values.diner.args }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.diner.args "context" $) | nindent 12 }}
+          {{- end }}
+          env:
+            - name: BITNAMI_DEBUG
+              value: {{ ternary "true" "false" (or .Values.diner.image.debug .Values.diagnosticMode.enabled) | quote }}
+            - name: foo
+              value: bar
+            {{- if .Values.diner.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.diner.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
+          envFrom:
+            {{- if .Values.diner.extraEnvVarsCM }}
+            - configMapRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.diner.extraEnvVarsCM "context" $) }}
+            {{- end }}
+            {{- if .Values.diner.extraEnvVarsSecret }}
+            - secretRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.diner.extraEnvVarsSecret "context" $) }}
+            {{- end }}
+          {{- if .Values.diner.resources }}
+          resources: {{- toYaml .Values.diner.resources | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.diner.containerPorts.http }}
+            - name: https
+              containerPort: {{ .Values.diner.containerPorts.https }}
+          {{- if not .Values.diagnosticMode.enabled }}
+          {{- if .Values.diner.customLivenessProbe }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.diner.customLivenessProbe "context" $) | nindent 12 }}
+          {{- else if .Values.diner.livenessProbe.enabled }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.diner.livenessProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /actuator/health
+              port: http
+          {{- end }}
+          {{- if .Values.diner.customReadinessProbe }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.diner.customReadinessProbe "context" $) | nindent 12 }}
+          {{- else if .Values.diner.readinessProbe.enabled }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.diner.readinessProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /actuator/health
+              port: http
+          {{- end }}
+          {{- if .Values.diner.customStartupProbe }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.diner.customStartupProbe "context" $) | nindent 12 }}
+          {{- else if .Values.diner.startupProbe.enabled }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.diner.startupProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /actuator/health
+              port: http
+          {{- end }}
+          {{- end }}
+          {{- if .Values.diner.lifecycleHooks }}
+          lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.diner.lifecycleHooks "context" $) | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: foo
+              mountPath: {{ .Values.persistence.mountPath }}
+              {{- if .Values.persistence.subPath }}
+              subPath: {{ .Values.persistence.subPath }}
+              {{- end }}
+          {{- if .Values.diner.extraVolumeMounts }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.diner.extraVolumeMounts "context" $) | nindent 12 }}
+          {{- end }}
+        {{- if .Values.diner.sidecars }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.diner.sidecars "context" $) | nindent 8 }}
+        {{- end }}
+      volumes:
+        - name: foo
+        {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ default (include "common.names.fullname" .) .Values.persistence.existingClaim }}
+        {{- else }}
+          emptyDir: {}
+        {{- end }}
+        {{- if .Values.diner.extraVolumes }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.diner.extraVolumes "context" $) | nindent 8 }}
+        {{- end }}

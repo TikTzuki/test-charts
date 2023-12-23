@@ -15,7 +15,7 @@ Create the name of the service account to use
 */}}
 {{- define "fnb.admin.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "fnb.admin.fullname" .) .Values.admin.serviceAccount.name }}
+{{- default (include "fnb.admin.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}

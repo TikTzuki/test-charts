@@ -28,4 +28,5 @@ In order to replicate the container startup scripts execute this command:
 
 {{- end }}
 
-{{- include "common.warnings.rollingTag" .Values.image }}
+{{- include "common.warnings.rollingTag" .Values.diner.image }}
+{{- include "fnb.validateValues" . }}

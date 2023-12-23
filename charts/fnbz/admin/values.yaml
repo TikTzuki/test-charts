@@ -9,6 +9,12 @@ namespaceOverride: ""
 commonLabels: {}
 commonAnnotations: {}
 clusterDomain: cluster.local
+diagnosticMode:
+  enabled: false
+  command:
+    - sleep
+  args:
+    - infinity
 image:
   registry: docker.io
   repository: tiktuzki/fnb-admin
