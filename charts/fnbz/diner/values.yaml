@@ -88,7 +88,7 @@ diner:
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
     ##
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
     ## Optionally specify an array of imagePullSecrets.
     ## Secrets must be manually created in the namespace.
     ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
@@ -120,11 +120,14 @@ diner:
   ##
   livenessProbe:
     enabled: true
-    initialDelaySeconds: foo
-    periodSeconds: bar
-    timeoutSeconds: foo
-    failureThreshold: bar
-    successThreshold: foo
+    initialDelaySeconds: 25
+    periodSeconds: 20
+    timeoutSeconds: 120
+    failureThreshold: 3
+    successThreshold: 1
+    httpGet:
+      path: /actuator/health
+      port: http
   ## @param diner.readinessProbe.enabled Enable readinessProbe on %%MAIN_CONTAINER_NAME%% containers
   ## @param diner.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
   ## @param diner.readinessProbe.periodSeconds Period seconds for readinessProbe
@@ -134,11 +137,14 @@ diner:
   ##
   readinessProbe:
     enabled: true
-    initialDelaySeconds: foo
-    periodSeconds: bar
-    timeoutSeconds: foo
-    failureThreshold: bar
-    successThreshold: foo
+    initialDelaySeconds: 25
+    periodSeconds: 10
+    timeoutSeconds: 150
+    failureThreshold: 3
+    successThreshold: 1
+    httpGet:
+      path: /actuator/health
+      port: http
   ## @param diner.startupProbe.enabled Enable startupProbe on %%MAIN_CONTAINER_NAME%% containers
   ## @param diner.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
   ## @param diner.startupProbe.periodSeconds Period seconds for startupProbe
@@ -148,11 +154,14 @@ diner:
   ##
   startupProbe:
     enabled: false
-    initialDelaySeconds: foo
-    periodSeconds: bar
-    timeoutSeconds: foo
-    failureThreshold: bar
-    successThreshold: foo
+    initialDelaySeconds:
+    periodSeconds:
+    timeoutSeconds:
+    failureThreshold:
+    successThreshold:
+    httpGet:
+      path: /actuator/health
+      port: http
   ## @param diner.customLivenessProbe Custom livenessProbe that overrides the default one
   ##
   customLivenessProbe: {}

@@ -135,25 +135,16 @@ spec:
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.diner.customLivenessProbe "context" $) | nindent 12 }}
           {{- else if .Values.diner.livenessProbe.enabled }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.diner.livenessProbe "enabled") "context" $) | nindent 12 }}
-            httpGet:
-              path: /actuator/health
-              port: http
           {{- end }}
           {{- if .Values.diner.customReadinessProbe }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.diner.customReadinessProbe "context" $) | nindent 12 }}
           {{- else if .Values.diner.readinessProbe.enabled }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.diner.readinessProbe "enabled") "context" $) | nindent 12 }}
-            httpGet:
-              path: /actuator/health
-              port: http
           {{- end }}
           {{- if .Values.diner.customStartupProbe }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.diner.customStartupProbe "context" $) | nindent 12 }}
           {{- else if .Values.diner.startupProbe.enabled }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.diner.startupProbe "enabled") "context" $) | nindent 12 }}
-            httpGet:
-              path: /actuator/health
-              port: http
           {{- end }}
           {{- end }}
           {{- if .Values.diner.lifecycleHooks }}
@@ -165,6 +156,9 @@ spec:
               {{- if .Values.persistence.subPath }}
               subPath: {{ .Values.persistence.subPath }}
               {{- end }}
+            - name: spring-config
+              mountPath: /config
+              readOnly: true
           {{- if .Values.diner.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.diner.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
@@ -179,6 +173,13 @@ spec:
         {{- else }}
           emptyDir: {}
         {{- end }}
+        - name: spring-config
+          configMap:
+            name: {{ include "fnb.configmapName" . }}
+            defaultMode: 0644
+            items:
+              - key: application.yaml
+                path: application.yaml
         {{- if .Values.diner.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.diner.extraVolumes "context" $) | nindent 8 }}
         {{- end }}

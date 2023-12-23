@@ -16,4 +16,4 @@ metadata:
 data:
   application.yaml: |
     configmap:
-      message: From configmap.yaml
+      message: Configmap default

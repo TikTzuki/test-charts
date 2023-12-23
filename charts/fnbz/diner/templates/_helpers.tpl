@@ -46,6 +46,17 @@ Ref: https://cert-manager.io/docs/usage/ingress/#supported-annotations
 {{- end -}}
 
 {{/*
+Get the Alertmanager configuration configmap.
+*/}}
+{{- define "fnb.configmapName" -}}
+{{- if .Values.diner.existingConfigmap -}}
+    {{ .Values.diner.existingConfigmap }}
+{{- else -}}
+    {{ include "common.names.fullname" . }}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Compile all warnings into a single message.
 */}}
 {{- define "fnb.validateValues" -}}
