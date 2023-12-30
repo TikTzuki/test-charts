@@ -6,7 +6,7 @@ from typing import Dict
 
 
 def replace_content(filename, map: Dict):
-  shutil.copyfile(filename, filename+".bak")
+  shutil.copyfile(filename, filename + ".bak")
 
   f = open(filename, mode="r")
   content = f.read()
@@ -22,7 +22,8 @@ def replace_content(filename, map: Dict):
 
 
 def restore(filename):
-  os.rename(filename + ".bak", filename)
+  if os.path.isfile(filename + ".bak"):
+    os.rename(filename + ".bak", filename)
 
 
 def mapping_file_to_dict(filepath) -> Dict:
@@ -55,15 +56,17 @@ def main():
   input_file = args.input
   directory = args.directory
   command = args.command
-  if (command == "gen"):
+  if command in {"gen", "g"}:
+    print("Generate charts")
     mapping_dict = mapping_file_to_dict(input_file)
     print(mapping_dict)
     for subdir, dirs, files in os.walk(directory):
       for file in files:
         filepath = subdir + os.sep + file
-        if not file.endswith(".bak"):
+        if file.endswith((".tpl", ".yaml", ".txt", ".md")):
           replace_content(filepath, mapping_dict)
-  elif command == "restore":
+  elif command in {"restore", "r"}:
+    print("Quick start restore")
     for subdir, dirs, files in os.walk(directory):
       for file in files:
         filepath = subdir + os.sep + file
