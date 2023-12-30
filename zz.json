@@ -1,0 +1,13 @@
+{
+    "- condition: SUBCHART_NAME.enabled\n    name: SUBCHART_NAME\n    repository: oci://registry-1.docker.io/bitnamicharts\n    version: %%MAJOR_SUBCHART_VERSION_(A.X.X)%%\n": "",
+    "%%CHOOSE_ONE_FROM_CHART_CATEGORIES_FILE%%": "Fnb",
+    "%%UPSTREAM_PROJECT_VERSION%%": "1.0.0",
+    "%%DESCRIPTION%%": "Fnb description",
+    "%%CHART_NAME%%": "fnb-cms",
+    "%%TEMPLATE_NAME%%": "fnb",
+    "%%MAIN_OBJECT_BLOCK%%": "cms",
+    "bitnami/%%IMAGE_NAME%%": "tiktuzki/fnb-cms",
+    "%%IMAGE_TAG%%": "latest",
+    "1-debian-11-r%%IMAGE_REVISION%%": "11-debian-11-r91",
+    "/bitnami/%%MAIN_OBJECT_BLOCK%%/data": "/tiktuzki/cms/data"
+}

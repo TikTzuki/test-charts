@@ -1,5 +1,3 @@
-# Copyright TikTuzki
-# SPDX-License-Identifier: APACHE-2.0
 global:
   imageRegistry: ""
   imagePullSecrets: []
@@ -11,26 +9,19 @@ namespaceOverride: ""
 commonLabels: {}
 commonAnnotations: {}
 clusterDomain: cluster.local
-extraDeploy: []
-diagnosticMode:
-  enabled: false
-  command:
-    - sleep
-  args:
-    - infinity
-diner:
+cms:
   image:
     registry: docker.io
-    repository: tiktuzki/fnb-diner
+    repository: tiktuzki/fnb-cms
     tag: latest
     digest: ""
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
     pullSecrets: []
     debug: false
   replicaCount: 1
   containerPorts:
-    http: 8080
-    https: 8443
+    http: 80
+    https: 443
   livenessProbe:
     enabled: true
     initialDelaySeconds: 25
@@ -75,6 +66,8 @@ diner:
     runAsUser: 1001
     runAsNonRoot: true
     readOnlyRootFilesystem: false
+
+  
   existingConfigmap:
   command: []
   args: []
@@ -118,40 +111,40 @@ diner:
   extraVolumeMounts: []
   sidecars: []
   initContainers: []
-service:
-  type: LoadBalancer
-  ports:
-    http: 80
-    https: 443
-  nodePorts:
-    http: ""
-    https: ""
-  clusterIP: ""
-  loadBalancerIP: ""
-  loadBalancerSourceRanges: []
-  externalTrafficPolicy: Cluster
-  annotations: {}
-  extraPorts: []
-  sessionAffinity: None
-  sessionAffinityConfig: {}
+extraDeploy: []
+diagnosticMode:
+  enabled: false
+  command:
+    - sleep
+  args:
+    - infinity
 ingress:
   enabled: false
   pathType: ImplementationSpecific
   apiVersion: ""
-  hostname: diner.local
+  hostname: %%COMPONENT_NAME%%.local
   ingressClassName: ""
   path: /
+
   annotations: {}
+
   tls: false
+
   selfSigned: false
+
   extraHosts: []
+
   extraPaths: []
+
   extraTls: []
+
   secrets: []
+
   extraRules: []
+
 persistence:
   enabled: true
-  mountPath: /bitnami/diner/data
+  mountPath: /bitnami/cms/data
   subPath: ""
   storageClass: ""
   annotations: {}
@@ -160,13 +153,15 @@ persistence:
   size: 8Gi
   existingClaim: ""
   selector: {}
+
   dataSource: {}
+
 volumePermissions:
   enabled: false
   image:
     registry: docker.io
     repository: bitnami/os-shell
-    tag: 11-debian-11-r91
+    tag: 111-debian-11-r91
     pullPolicy: IfNotPresent
     pullSecrets: []
   resources:
@@ -174,14 +169,13 @@ volumePermissions:
     requests: {}
   containerSecurityContext:
     runAsUser: 0
-rbac:
-  create: false
-  rules: []
+
 serviceAccount:
   create: true
   name: ""
   annotations: {}
   automountServiceAccountToken: true
+
 metrics:
   enabled: false
   serviceMonitor:

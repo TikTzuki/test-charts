@@ -156,9 +156,6 @@ spec:
               {{- if .Values.persistence.subPath }}
               subPath: {{ .Values.persistence.subPath }}
               {{- end }}
-            - name: spring-config
-              mountPath: /config
-              readOnly: true
           {{- if .Values.diner.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.diner.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
@@ -173,13 +170,6 @@ spec:
         {{- else }}
           emptyDir: {}
         {{- end }}
-        - name: spring-config
-          configMap:
-            name: {{ include "fnb.configmapName" . }}
-            defaultMode: 0644
-            items:
-              - key: application.yaml
-                path: application.yaml
         {{- if .Values.diner.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.diner.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
