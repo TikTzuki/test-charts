@@ -19,5 +19,7 @@
     "%%COMPONENT_NAME%%": "cms.fnb",
     "  livenessProbe:\n    enabled: true\n    initialDelaySeconds: foo\n    periodSeconds: bar\n    timeoutSeconds: foo\n    failureThreshold: bar\n    successThreshold: foo\n  readinessProbe:\n    enabled: true\n    initialDelaySeconds: foo\n    periodSeconds: bar\n    timeoutSeconds: foo\n    failureThreshold: bar\n    successThreshold: foo\n  startupProbe:\n    enabled: false\n    initialDelaySeconds: foo\n    periodSeconds: bar\n    timeoutSeconds: foo\n    failureThreshold: bar\n    successThreshold: foo": "  livenessProbe:\n    enabled: true\n    initialDelaySeconds: 25\n    periodSeconds: 20\n    timeoutSeconds: 120\n    failureThreshold: 3\n    successThreshold: 1\n    httpGet:\n      path: /actuator/health\n      port: http\n  readinessProbe:\n    enabled: true\n    initialDelaySeconds: 25\n    periodSeconds: 10\n    timeoutSeconds: 150\n    failureThreshold: 3\n    successThreshold: 1\n    httpGet:\n      path: /actuator/health\n      port: http\n  startupProbe:\n    enabled: false\n    initialDelaySeconds:\n    periodSeconds:\n    timeoutSeconds:\n    failureThreshold:\n    successThreshold:\n    httpGet:\n      path: /actuator/health\n      port: http",
     "%%PORT_NAME%%": "http",
-    "protocol: bar": "protocol: TCP"
+    "protocol: bar": "protocol: TCP",
+    "%%commands%%": "ls",
+    "%%CONTAINER_NAME%%": "fnb-cms"
 }

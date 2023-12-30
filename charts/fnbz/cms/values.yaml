@@ -148,7 +148,6 @@ service:
   extraPorts: []
   sessionAffinity: ClientIP
   sessionAffinityConfig: {}
-
 persistence:
   enabled: true
   mountPath: /bitnami/%%MAIN_OBJECT_BLOCK%%/data

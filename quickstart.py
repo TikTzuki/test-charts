@@ -26,6 +26,11 @@ def restore(filename):
     os.rename(filename + ".bak", filename)
 
 
+def delete_bak(filename):
+  if os.path.isfile(filename + ".bak"):
+    os.remove(filename + ".bak")
+
+
 def mapping_file_to_dict(filepath) -> Dict:
   with open(filepath) as f:
     return json.load(f)
@@ -67,6 +72,13 @@ def main():
           replace_content(filepath, mapping_dict)
   elif command in {"restore", "r"}:
     print("Quick start restore")
+    for subdir, dirs, files in os.walk(directory):
+      for file in files:
+        filepath = subdir + os.sep + file
+        if not file.endswith(".bak"):
+          restore(filepath)
+  elif command in {"backup", "b"}:
+    print("Delete backup")
     for subdir, dirs, files in os.walk(directory):
       for file in files:
         filepath = subdir + os.sep + file
