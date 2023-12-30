@@ -7,7 +7,7 @@ from typing import Dict
 
 def replace_content(filename, map: Dict):
   shutil.copyfile(filename, filename + ".bak")
-
+  print("file: " + filename)
   f = open(filename, mode="r")
   content = f.read()
   f.close()

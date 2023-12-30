@@ -133,6 +133,21 @@ ingress:
 
   extraRules: []
 
+service:
+  type: LoadBalancer
+  ports:
+    http: 8080
+  nodePorts:
+    http: ""
+  clusterIP: ""
+  loadBalancerIP: ""
+  loadBalancerClass: ""
+  loadBalancerSourceRanges: []
+  externalTrafficPolicy: Cluster
+  annotations: {}
+  extraPorts: []
+  sessionAffinity: ClientIP
+  sessionAffinityConfig: {}
 persistence:
   enabled: true
   mountPath: /bitnami/%%MAIN_OBJECT_BLOCK%%/data
