@@ -9,11 +9,11 @@ namespaceOverride: ""
 commonLabels: {}
 commonAnnotations: {}
 clusterDomain: cluster.local
-cms:
+%%MAIN_OBJECT_BLOCK%%:
   image:
     registry: docker.io
-    repository: tiktuzki/fnb-cms
-    tag: latest
+    repository: bitnami/%%IMAGE_NAME%%
+    tag: %%IMAGE_TAG%%
     digest: ""
     pullPolicy: IfNotPresent
     pullSecrets: []
@@ -24,34 +24,25 @@ cms:
     https: 443
   livenessProbe:
     enabled: true
-    initialDelaySeconds: 25
-    periodSeconds: 20
-    timeoutSeconds: 120
-    failureThreshold: 3
-    successThreshold: 1
-    httpGet:
-      path: /actuator/health
-      port: http
+    initialDelaySeconds: foo
+    periodSeconds: bar
+    timeoutSeconds: foo
+    failureThreshold: bar
+    successThreshold: foo
   readinessProbe:
     enabled: true
-    initialDelaySeconds: 25
-    periodSeconds: 10
-    timeoutSeconds: 150
-    failureThreshold: 3
-    successThreshold: 1
-    httpGet:
-      path: /actuator/health
-      port: http
+    initialDelaySeconds: foo
+    periodSeconds: bar
+    timeoutSeconds: foo
+    failureThreshold: bar
+    successThreshold: foo
   startupProbe:
     enabled: false
-    initialDelaySeconds:
-    periodSeconds:
-    timeoutSeconds:
-    failureThreshold:
-    successThreshold:
-    httpGet:
-      path: /actuator/health
-      port: http
+    initialDelaySeconds: foo
+    periodSeconds: bar
+    timeoutSeconds: foo
+    failureThreshold: bar
+    successThreshold: foo
   customLivenessProbe: {}
   customReadinessProbe: {}
   customStartupProbe: {}
@@ -67,7 +58,7 @@ cms:
     runAsNonRoot: true
     readOnlyRootFilesystem: false
 
-  
+  %%OTHER_PARAMETERS_RELATED_TO_THIS_CONTAINER/POD%%
   existingConfigmap:
   command: []
   args: []
@@ -144,7 +135,7 @@ ingress:
 
 persistence:
   enabled: true
-  mountPath: /bitnami/cms/data
+  mountPath: /bitnami/%%MAIN_OBJECT_BLOCK%%/data
   subPath: ""
   storageClass: ""
   annotations: {}
@@ -161,7 +152,7 @@ volumePermissions:
   image:
     registry: docker.io
     repository: bitnami/os-shell
-    tag: 111-debian-11-r91
+    tag: 11-debian-11-r%%IMAGE_REVISION%%
     pullPolicy: IfNotPresent
     pullSecrets: []
   resources:
